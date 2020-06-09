@@ -1,0 +1,29 @@
+{
+  "name": "result-visualization",
+  "version": "1.0.0",
+  "description": "Node based Javascript application to visualize data result",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CDL-Biomae/result-visualization.git"
+  },
+  "author": "Thomas Pennamen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CDL-Biomae/result-visualization/issues"
+  },
+  "homepage": "https://github.com/CDL-Biomae/result-visualization#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "fs": "0.0.1-security",
+    "http": "0.0.1-security",
+    "mysql": "^2.18.1",
+    "nodemon": "^2.0.3"
+  }
+}
