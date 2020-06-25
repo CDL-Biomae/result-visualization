@@ -8,7 +8,6 @@ module.exports.getAll = (callback) => {
 };
 module.exports.getOneWithChemistryResult = ({ query }, callback) => {
   if (query.campaign) {
-    let ouput;
     rawDatabase.query(
       `SELECT pack_id, sandre, value  FROM Analysis JOIN Pack ON Pack.id=Analysis.pack_id JOIN Measurepoint ON Measurepoint.id=Pack.measurepoint_id WHERE Measurepoint.reference like "${query.campaign}%"`,
       (err, result) => {
