@@ -8,11 +8,20 @@ module.exports.getAll = (callback) => {
 };
 module.exports.getOneWithChemistryResult = ({ query }, callback) => {
   if (query.campaign) {
+    let ouput;
     rawDatabase.query(
-      `SELECT pack_id, sandre, Analysis.name, prefix, value  FROM Analysis JOIN Pack ON Pack.id=Analysis.pack_id JOIN Measurepoint ON Measurepoint.id=Pack.measurepoint_id WHERE Measurepoint.reference like "${query.campaign}%"`,
+      `SELECT pack_id, sandre, value  FROM Analysis JOIN Pack ON Pack.id=Analysis.pack_id JOIN Measurepoint ON Measurepoint.id=Pack.measurepoint_id WHERE Measurepoint.reference like "${query.campaign}%"`,
       (err, result) => {
         if (err) throw err;
-        return callback(result);
+        let output = {};
+        result.forEach((row) => {
+          if (output[row.pack_id]) {
+            output[row.pack_id][row.sandre] = row.value;
+          } else {
+            output[row.pack_id] = { [row.sandre]: [row.value] };
+          }
+        });
+        return callback(output);
       }
     );
   } else {
@@ -22,13 +31,14 @@ module.exports.getOneWithChemistryResult = ({ query }, callback) => {
 module.exports.getAllWithToxResult = ({ query }, callback) => {
   let output = { campaign: [] };
   rawDatabase.query(
-    "SELECT project_id, Campaign.id as campaignId, Campaign.reference as campaignReference, Place.id as placeId, Place.reference as placeReference, Place.name, Measurepoint.id as measurepointId, Measurepoint.reference as measurepointReference, Measurepoint.longitude as longitude, Measurepoint.latitude as latitude, Measurepoint.code_t0_id, Pack.id as packId, Pack.nature as packNature FROM Campaign JOIN Place ON Place.campaign_id=Campaign.id JOIN Measurepoint ON Measurepoint.place_id=Place.id JOIN Pack ON Pack.measurepoint_id=Measurepoint.id ",
+    "SELECT project_id, Campaign.id as campaignId, Campaign.name as campaignName, Campaign.reference as campaignReference, Place.id as placeId, Place.reference as placeReference, Place.name, Measurepoint.id as measurepointId, Measurepoint.reference as measurepointReference, Measurepoint.longitude as longitude, Measurepoint.latitude as latitude, Measurepoint.code_t0_id, Pack.id as packId, Pack.nature as packNature FROM Campaign JOIN Place ON Place.campaign_id=Campaign.id JOIN Measurepoint ON Measurepoint.place_id=Place.id JOIN Pack ON Pack.measurepoint_id=Measurepoint.id ",
     (err, result) => {
       if (err) throw err;
       result.forEach(
         ({
           project_id,
           campaignId,
+          campaignName,
           campaignReference,
           placeId,
           placeReference,
@@ -69,6 +79,7 @@ module.exports.getAllWithToxResult = ({ query }, callback) => {
                     reference: measurepointReference,
                     longitude,
                     latitude,
+                    code_t0_id,
                     pack: [{ id: packId, nature: packNature }],
                   });
               }
@@ -79,13 +90,13 @@ module.exports.getAllWithToxResult = ({ query }, callback) => {
                   id: placeId,
                   reference: placeReference,
                   name: name,
-                  code_t0_id,
                   measurepoint: [
                     {
                       id: measurepointId,
                       reference: measurepointReference,
                       longitude,
                       latitude,
+                      code_t0_id,
                       pack: [{ id: packId, nature: packNature }],
                     },
                   ],
@@ -95,13 +106,13 @@ module.exports.getAllWithToxResult = ({ query }, callback) => {
             output.campaign.push({
               project_id: project_id,
               id: campaignId,
+              name: campaignName,
               reference: campaignReference,
               place: [
                 {
                   id: placeId,
                   reference: placeReference,
                   name: name,
-                  code_t0_id,
                   measurepoint: [
                     {
                       id: measurepointId,
@@ -126,28 +137,29 @@ module.exports.getAllWithToxResult = ({ query }, callback) => {
           result.forEach((row) => {
             output.campaign.forEach((campaignChecked) => {
               campaignChecked.place.forEach((placeChecked) => {
-                const placeFound = placeChecked.measurepoint.find(
-                  (point) => point.id == row.measurepoint_id
-                );
-                if (placeFound) {
-                  if (!placeChecked.toxicity) {
-                    placeChecked.toxicity = {};
+                placeChecked.measurepoint.forEach((measurepointChecked) => {
+                  if (measurepointChecked.id == row.measurepoint_id) {
+                    if (!measurepointChecked.toxicity) {
+                      measurepointChecked.toxicity = {};
+                    }
+                    if (row.male_survival_7_days) {
+                      measurepointChecked.toxicity.male_survival_7_days =
+                        row.male_survival_7_days;
+                    }
+                    if (row.alimentation) {
+                      measurepointChecked.toxicity.alimentation =
+                        row.alimentation;
+                    }
+                    if (row.neurotoxicity) {
+                      measurepointChecked.toxicity.neurotoxicity =
+                        row.neurotoxicity;
+                    }
+                    if (row.percent_inhibition_fecondite) {
+                      measurepointChecked.toxicity.fecondity =
+                        row.percent_inhibition_fecondite;
+                    }
                   }
-                  if (row.male_survival_7_days) {
-                    placeChecked.toxicity.male_survival_7_days =
-                      row.male_survival_7_days;
-                  }
-                  if (row.alimentation) {
-                    placeChecked.toxicity.alimentation = row.alimentation;
-                  }
-                  if (row.neurotoxicity) {
-                    placeChecked.toxicity.neurotoxicity = row.neurotoxicity;
-                  }
-                  if (row.percent_inhibition_fecondite) {
-                    placeChecked.toxicity.fecondity =
-                      row.percent_inhibition_fecondite;
-                  }
-                }
+                });
               });
             });
           });
@@ -168,9 +180,9 @@ module.exports.getAllWithToxResult = ({ query }, callback) => {
                           row.measurepoint_id == measurepointChecked.id;
                         if (measurepointFound && row.date) {
                           if (row.date_id == 6)
-                            placeChecked.chemistryStart = new Date(row.date);
+                            measurepointChecked.chemistryStart = new Date(row.date);
                           if (row.date_id == 7)
-                            placeChecked.chemistryEnd = new Date(row.date);
+                            measurepointChecked.chemistryEnd = new Date(row.date);
                         }
                       }
                     });
@@ -179,18 +191,21 @@ module.exports.getAllWithToxResult = ({ query }, callback) => {
               });
               output.campaign.forEach((campaignChecked) => {
                 campaignChecked.place.forEach((placeChecked) => {
-                  if (
-                    placeChecked.chemistryEnd &&
-                    placeChecked.chemistryStart
-                  ) {
-                    placeChecked.chemistryDays =
-                      (placeChecked.chemistryEnd -
-                        placeChecked.chemistryStart) /
-                        (1000 * 3600 * 24) <
-                      14
-                        ? 7
-                        : 21;
-                  }
+                  placeChecked.measurepoint.forEach((measurepointChecked) => {
+                    if (
+                      measurepointChecked.chemistryEnd &&
+                      measurepointChecked.chemistryStart
+                    ) {
+                      measurepointChecked.chemistryDays =
+                        (measurepointChecked.chemistryEnd -
+                          measurepointChecked
+                            .chemistryStart) /
+                          (1000 * 3600 * 24) <
+                        14
+                          ? 7
+                          : 21;
+                    }
+                  });
                 });
               });
               return callback(output);
