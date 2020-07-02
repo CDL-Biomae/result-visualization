@@ -5,6 +5,6 @@ module.exports.getHydroSector = (callback) => {
     return callback(hydroSectors.features)
 }
 module.exports.getStream = (callback) => {
-    const streamsFiltered = streamsRaw.features.filter(stream => stream.geometry.coordinates[0].length>600)
+    const streamsFiltered = streamsRaw.features.filter(stream => stream.classifica==1)
     return callback(streamsFiltered)
 }

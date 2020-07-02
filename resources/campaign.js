@@ -157,6 +157,14 @@ module.exports.getAllWithToxResult = ({ query }, callback) => {
                       measurepointChecked.toxicity.fecondity =
                         row.percent_inhibition_fecondite;
                     }
+                    if (row.molting_cycle_conformity) {
+                      measurepointChecked.toxicity.molting_cycle_conformity =
+                        row.molting_cycle_conformity;
+                    }
+                    if (row.surface_retard_conformity) {
+                      measurepointChecked.toxicity.surface_retard_conformity =
+                        row.surface_retard_conformity;
+                    }
                   }
                 });
               });
