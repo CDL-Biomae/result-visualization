@@ -33,7 +33,7 @@ module.exports.getAllWithToxResult = ({ query }, callback) => {
     if (err) throw err;
     rawDatabaseConnection.connect(() => {
       rawDatabaseConnection.query(
-        "SELECT project_id, Campaign.id as campaignId, Campaign.name as campaignName, Campaign.reference as campaignReference, Place.id as placeId, Place.reference as placeReference, Place.name, Measurepoint.id as measurepointId, Measurepoint.reference as measurepointReference, Measurepoint.longitude as longitude, Measurepoint.latitude as latitude, Measurepoint.code_t0_id, Pack.id as packId, Pack.nature as packNature FROM Campaign JOIN Place ON Place.campaign_id=Campaign.id JOIN Measurepoint ON Measurepoint.place_id=Place.id JOIN Pack ON Pack.measurepoint_id=Measurepoint.id ",
+        "SELECT project_id, Campaign.id as campaignId, Campaign.name as campaignName, Campaign.reference as campaignReference, Place.id as placeId, Place.reference as placeReference, Place.name, Measurepoint.id as measurepointId, Measurepoint.reference as measurepointReference, Measurepoint.longitudeSpotted as longitude, Measurepoint.latitudeSpotted as latitude, Measurepoint.code_t0_id, Pack.id as packId, Pack.nature as packNature FROM Campaign JOIN Place ON Place.campaign_id=Campaign.id JOIN Measurepoint ON Measurepoint.place_id=Place.id JOIN Pack ON Pack.measurepoint_id=Measurepoint.id ",
         (err, result) => {
           if (err) throw err;
           result.forEach(
