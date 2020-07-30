@@ -1,5 +1,5 @@
-// const hydroSectors = require('../layers/SecteurHydro_FXX.json')
-// const streamsRaw = require('../layers/paot_ctxt_cours_deau.json')
+const hydroSectors = require('../layers/SecteurHydro_FXX.json')
+const streamsRaw = require('../layers/paot_ctxt_cours_deau.json')
 
 module.exports.getHydroSector = (callback) => {
     return callback(hydroSectors.features)
