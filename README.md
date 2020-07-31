@@ -67,11 +67,3 @@ Une case à cocher **afficher jusqu'au sous bassin** permet d'aller à un nouvea
 La partie principale de l'application est la carte intéractive qui affiche les résultats. On peut zoomer/dézoomer avec l'aide de la molette, on peut se déplacer sur la carte en cliquant/glissant la carte et on peut rotationner la carte en faisant "Clic droit + déplacement souris".
 
 **déplacer un point** Les points peuvent tous être déplacés en cliquant/glissant le point. Un "flèche" noire apparaîtra pour préciser la position réelle du point. Cette même couleur de flèche peut être modifiée lorsque un des points a été déplacé par l'onglet prévu à cet effet qui apparaît sur la droite en bas du menu de personalisation . 
-
-## Fonctionnement technique 
-
-### Côté serveur
-
- 
-
-### Côté client

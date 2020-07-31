@@ -1,11 +1,12 @@
 <template>
   <div>
     <a>
-      <router-link to="/">Accueil</router-link>
+      <router-link to="/"></router-link>
     </a>
     <a>
-      <router-link to="/login">Se connecter</router-link>
+      <!-- <router-link to="/login">Se connecter</router-link> -->
     </a>
+    
   </div>
 </template>
 

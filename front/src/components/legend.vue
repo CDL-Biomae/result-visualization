@@ -8,9 +8,6 @@
   >
     <strong v-if="title">{{title}}</strong>
     <div v-if="biotest && data && data.length>1">
-      <!-- <div v-for="(element,index) in data" :key="index" class="display:flex; flex-direction=column">
-        <div class="legend-color">{{index+1}}</div>
-      </div>-->
       <div v-for="(element,index) in data" :key="index" class="legend-container">
         <div class="legend-color">{{index+1}}</div>
         <span
@@ -27,23 +24,38 @@
     </div>
     <div v-if="biotest && biotest!='mue' && biotest!='NQE'">
       <div class="legend-container">
-        <div class="legend-color" style="background: #4169e1"></div>
+        <div
+          class="legend-color"
+          :style="!newColor || biotest!='BBAC'? 'background: #4169e1' : 'background : #dbb7ff'"
+        ></div>
         <span class="legend-content">Conforme</span>
       </div>
       <div class="legend-container">
-        <div class="legend-color" style="background: #9acd32"></div>
+        <div
+          class="legend-color"
+          :style="!newColor || biotest!='BBAC'?'background: #9acd32':'background : #b565f7'"
+        ></div>
         <span class="legend-content">Impact faible</span>
       </div>
       <div class="legend-container">
-        <div class="legend-color" style="background: #ffd700"></div>
+        <div
+          class="legend-color"
+          :style="!newColor || biotest!='BBAC'?'background: #ffd700':'background : #8909ff'"
+        ></div>
         <span class="legend-content">Impact modéré</span>
       </div>
       <div class="legend-container">
-        <div class="legend-color" style="background: #ff8c00"></div>
+        <div
+          class="legend-color"
+          :style="!newColor || biotest!='BBAC'?'background: #ff8c00':'background : #6600cc'"
+        ></div>
         <span class="legend-content">Impact fort</span>
       </div>
       <div class="legend-container">
-        <div class="legend-color" style="background: #dc143c"></div>
+        <div
+          class="legend-color"
+          :style="!newColor || biotest!='BBAC'?'background: #dc143c':'background : #47008e'"
+        ></div>
         <span class="legend-content">Impact très fort</span>
       </div>
       <div class="legend-container">
@@ -102,8 +114,8 @@
         <thead>
           <tr>
             <th></th>
-            <th class="toxicity-legend-header">Alim</th>
-            <th class="toxicity-legend-header">Neuro</th>
+            <th class="toxicity-legend-header">Alimentation</th>
+            <th class="toxicity-legend-header">Neurotoxicité</th>
             <th class="toxicity-legend-header">Fécondité</th>
             <th class="toxicity-legend-header">Mue</th>
             <th class="toxicity-legend-header">PE</th>
@@ -132,6 +144,21 @@
         </tbody>
       </table>
     </div>
+    <div v-if="name=='custom-points-legend'">
+      <div v-for="(element,index) in data" :key="index" class="legend-container">
+        <span class="legend-color">{{element.letter}}</span>
+        <span
+          class="legend-content"
+          v-if="!element.modifying"
+          @click="element.modifying=!element.modifying"
+        >{{element.name}}</span>
+        <input
+          v-if="element.modifying"
+          @keydown.enter="element.modifying=false"
+          v-model="element.name"
+        />
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -139,7 +166,7 @@ export default {
   data() {
     return {
       x: undefined,
-      y: undefined
+      y: undefined,
     };
   },
   props: [
@@ -148,7 +175,8 @@ export default {
     "campaign",
     "name",
     "biotest",
-    "NQEValidationPrecision"
+    "NQEValidationPrecision",
+    "newColor",
   ],
   methods: {
     getColor(line) {
@@ -176,11 +204,11 @@ export default {
             parseInt(result[1], 16),
             parseInt(result[2], 16),
             parseInt(result[3], 16),
-            opacity
+            opacity,
           ]
         : null;
-    }
-  }
+    },
+  },
 };
 </script>
 <style>
