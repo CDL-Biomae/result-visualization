@@ -9,7 +9,7 @@ module.exports = new Router()
     });
   })
   .get("/stream", (req, res, next) => {
-    layer.getStream((result) => {
+    layer.getStream(req, (result) => {
       res.json(result);
     });
   });
